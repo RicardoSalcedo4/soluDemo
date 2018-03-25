@@ -6,19 +6,24 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using clEntidad;
 using clDato;
 using System.Data.Common;
-
+using System.Data;
 namespace clLogica
 {
-    public class lUsuario:eUsuario
+    public class lUsuario
     {
-         dUsuario idUsuario;
-         DbConnection icnn_bd;
 
-         public lUsuario(Database pdb_conexion)
-         {
-             idUsuario = new dUsuario();
-             idUsuario.idb_conexion = pdb_conexion;             
-         }
+        dUsuario idUsuario;
+        dUsuarioSede idUsuarioSede;
+        Database idb_conexion;
+        DbConnection icnn_bd;
+
+        public lUsuario()
+        {
+            idUsuario = new dUsuario();
+            idUsuario.idb_conexion = idb_conexion;
+            idUsuarioSede = new dUsuarioSede();
+            idUsuarioSede.idb_conexion = idb_conexion;
+        }
 
         /// <summary>
         /// Validar usuario y clave 
@@ -30,73 +35,73 @@ namespace clLogica
         public String[] ValidarUsuarioClave(Int32 pEmpresa, String pNombreUsuario, String pClaveUsuario)
         {
             String[] lValor = new String[2];
-            String[] lsReturn ;
-            List<eUsuario> lListUsuario ;
+            DataTable ldt_Usuarios;
+            String[] lsReturn;          
             lValor[0] = "-1";
             lValor[1] = "";
 
             if (pEmpresa <= 0)
             {
-                    lValor[0] = "-1";
-                    lValor[1] = "Debe ingresar la Empresa";
-                    return lValor;
+                lValor[0] = "-1";
+                lValor[1] = "Debe ingresar la Empresa";
+                return lValor;
             }
             if (pNombreUsuario.Trim().Length == 0)
             {
-                    lValor[0] = "-1";
-                    lValor[1] = "Debe ingresar el nombre del usuario";
-                    return lValor;
+                lValor[0] = "-1";
+                lValor[1] = "Debe ingresar el nombre del usuario";
+                return lValor;
             }
             if (pClaveUsuario.Trim().Length == 0)
             {
-                    lValor[0] = "-1";
-                    lValor[1] = "Debe ingresar la clave del usuario";
-                    return lValor;
+                lValor[0] = "-1";
+                lValor[1] = "Debe ingresar la clave del usuario";
+                return lValor;
             }
 
             try
             {
-                    lsReturn = idUsuario.ListarDatosUsuario(pEmpresa, pNombreUsuario, out lListUsuario);
-                    if (lsReturn[0] != "1")
-                    {
-                        lValor[0] = "-1";
-                        lValor[1] = lsReturn[1];
-                        return lValor;
-                    }
+                lsReturn = idUsuario.Listar_xNombreUsuarioxClave(pEmpresa, pNombreUsuario, out ldt_Usuarios);
+                if (lsReturn[0] != "1")
+                {
+                    lValor[0] = "-1";
+                    lValor[1] = lsReturn[1];
+                    return lValor;
+                }
 
-                    if (lListUsuario.Count == 0)
-                    {
-                        lValor[0] = "-1";
-                        lValor[1] = "Usuario no existe";
-                        return lValor;
-                    }
+                if (ldt_Usuarios.Rows.Count == 0)
+                {
+                    lValor[0] = "-1";
+                    lValor[1] = "Usuario no existe";
+                    return lValor;
+                }
 
-                    if (lListUsuario.Count > 1)
-                    {
-                        lValor[0] = "-1";
-                        lValor[1] = "Hay mas de un usuario";
-                        return lValor;
-                    }
+                if (ldt_Usuarios.Rows.Count > 1)
+                {
+                    lValor[0] = "-1";
+                    lValor[1] = "Hay mas de un usuario";
+                    return lValor;
+                }
 
-                    if (lListUsuario[0].Clave != pClaveUsuario)
-                    {
-                        lValor[0] = "-1";
-                        lValor[1] = "Clave invalida";
-                        return lValor;
-                    }
+                if (ldt_Usuarios.Rows[0]["CLAVE"].ToString() != pClaveUsuario)
+                {
+                    lValor[0] = "-1";
+                    lValor[1] = "Clave invalida";
+                    return lValor;
+                }
 
-                    
-                    lValor[0] = "1";
-                    lValor[1] = "OK";
+
+                lValor[0] = "1";
+                lValor[1] = ldt_Usuarios.Rows[0]["COD_USUARIO"].ToString();
             }
             catch (Exception ex)
             {
-                    lValor[0] = "-1";
-                    lValor[1] ="lUsuario.ValidarDatosUsuario: " +  ex.Message;
-                    return lValor;
+                lValor[0] = "-1";
+                lValor[1] = "lUsuario.ValidarDatosUsuario: " + ex.Message;
+                return lValor;
             }
 
-  
+
             return lValor;
         }
 
@@ -104,9 +109,9 @@ namespace clLogica
         /// Insertar datos del usuario
         /// </summary>
         /// <returns>[0]: 1=OK ó -1=Error ; [1]: Mensaje</returns>
-        public String[] Insertar()
+        public String[] Insertar(eUsuario peUsuario )
         {
-            DbTransaction ltrans1 =null;
+            DbTransaction ltrans1 = null;
             Int32 li_CodigoUsuario;
             String[] lValor = new String[2];
             String[] lResult = new String[2];
@@ -114,58 +119,65 @@ namespace clLogica
             lValor[1] = "";
 
             //Validar datos
-            if (base.CodEmpresa <= 0)
+            if (peUsuario.CodEmpresa <= 0)
             {
                 lValor[0] = "-1";
                 lValor[1] = "Debe ingresar la Empresa";
                 return lValor;
             }
-            if (base.NombreUsuario.Trim().Length == 0)
+            if (peUsuario.NombreUsuario.Trim().Length == 0)
             {
                 lValor[0] = "-1";
                 lValor[1] = "Debe ingresar el nombre del usuario";
                 return lValor;
             }
-            if (base.NombreCompleto.Trim().Length == 0)
+            if (peUsuario.NombreCompleto.Trim().Length == 0)
             {
                 lValor[0] = "-1";
                 lValor[1] = "Debe ingresar el nombre del completo del usuario";
                 return lValor;
             }
-            if (base.Clave.Trim().Length == 0)
+            if (peUsuario.Clave.Trim().Length == 0)
             {
                 lValor[0] = "-1";
                 lValor[1] = "Debe ingresar la clave del usuario";
                 return lValor;
             }
-            if (base.FechaRegistro <= DateTime.Parse("01/01/1901"))
+            if (peUsuario.FechaRegistro <= DateTime.Parse("01/01/1901"))
             {
                 lValor[0] = "-1";
                 lValor[1] = "Debe ingresar la fecha de registro";
                 return lValor;
-            }      
+            }
 
-            
+
             //Grabar Datos
             try
             {
-                icnn_bd = idUsuario.idb_conexion.CreateConnection();
+                icnn_bd = idb_conexion.CreateConnection();
                 icnn_bd.Open();
                 ltrans1 = icnn_bd.BeginTransaction();
 
-                lResult = idUsuario.InsertarUsuario(base.CodEmpresa, base.NombreUsuario, base.NombreCompleto, base.FechaRegistro, ltrans1);
+                idUsuario.NombreUsuario = peUsuario.NombreUsuario;
+                idUsuario.NombreCompleto = peUsuario.NombreCompleto;
+                idUsuario.CodEmpresa = peUsuario.CodEmpresa;
+                lResult = idUsuario.Insertar( ltrans1);
                 if (lResult[0] != "1")
                 {
-                    vi_Commit_Rollback(ltrans1, false, icnn_bd);    
+                    vi_Commit_Rollback(ltrans1, false, icnn_bd);
                     lValor[0] = "-1";
                     lValor[1] = lResult[1];
                     return lValor;
                 }
                 li_CodigoUsuario = Int32.Parse(lResult[1]);
 
-                foreach (eSede RegSede in base.ItemSede)
+                foreach (eSede RegSede in peUsuario.ItemSede)
                 {
-                    lResult = idUsuario.InsertarSedeUsuario(base.CodEmpresa, li_CodigoUsuario, RegSede.Codigo, ltrans1);
+                    idUsuarioSede.CodSede = RegSede.Codigo;
+                    idUsuarioSede.CodUsuario =li_CodigoUsuario;
+                    idUsuarioSede.CodEmpresa = peUsuario.CodEmpresa;
+
+                    lResult = idUsuarioSede.Insertar( ltrans1);
                     if (lResult[0] != "1")
                     {
                         vi_Commit_Rollback(ltrans1, false, icnn_bd);
@@ -186,12 +198,12 @@ namespace clLogica
                 lValor[0] = "-1";
                 lValor[1] = "lUsuario.Insertar: " + ex.Message;
                 return lValor;
-            
+
             }
-           
+
         }
 
-        void vi_Commit_Rollback(DbTransaction ptrans_conexion1,Boolean pCommit, DbConnection pcnn_bd)
+        void vi_Commit_Rollback(DbTransaction ptrans_conexion1, Boolean pCommit, DbConnection pcnn_bd)
         {
             if (ptrans_conexion1 != null)
             {
@@ -203,20 +215,22 @@ namespace clLogica
                 {
                     ptrans_conexion1.Rollback();
                 }
-                    
+
                 ptrans_conexion1.Dispose();
                 ptrans_conexion1 = null;
             }
 
             if (pcnn_bd != null)
             {
-                 pcnn_bd.Close();
-                 pcnn_bd.Dispose();
-                 pcnn_bd = null;
+                pcnn_bd.Close();
+                pcnn_bd.Dispose();
+                pcnn_bd = null;
             }
-           
-            
+
+
         }
+
+    
 
     }
 }
