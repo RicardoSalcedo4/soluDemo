@@ -52,6 +52,14 @@ namespace wfaDemo
                 vi_aceptar();
             }
         }
+
+        
+
+        private void Inicio_sesion_Load(object sender, EventArgs e)
+        {
+           General.gFormulario lgFormulario = new General.gFormulario(this);
+           lgFormulario.vi_KeyDown();
+        }
      
     }
 }

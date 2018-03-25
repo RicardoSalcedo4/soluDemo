@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="General\gFormulario.cs" />
     <Compile Include="General\gValidacion.cs" />
     <Compile Include="Inicio_sesion.cs">
       <SubType>Form</SubType>

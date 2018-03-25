@@ -123,7 +123,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(519, 281);
-            this.ControlBox = false;
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btoCerrar);
@@ -134,6 +133,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Inicio_sesion";
             this.Text = "Inicio sesion";
+            this.Load += new System.EventHandler(this.Inicio_sesion_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errpGen)).EndInit();

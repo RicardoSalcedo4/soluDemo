@@ -155,7 +155,7 @@ namespace clDato
             {
                 if (idb_conexion.GetType().Name == "OracleDatabase")
                 {
-                    using (DbCommand cmd = idb_conexion.GetStoredProcCommand(is_oracle_esquema + ".SP_USUARIO_SEDE_INSERTAR"))
+                    using (DbCommand cmd = idb_conexion.GetStoredProcCommand( "DEMO.SP_USUARIO_SEDE_INSERTAR"))
                     {
                         idb_conexion.AddInParameter(cmd, "XX_EMPRESA", DbType.Int32, pEmpresa);
                         idb_conexion.AddInParameter(cmd, "XX_USUARIO", DbType.Int32, pUsuario);

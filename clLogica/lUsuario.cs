@@ -6,7 +6,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using clEntidad;
 using clDato;
 using System.Data.Common;
-using clEntidad;
+
 namespace clLogica
 {
     public class lUsuario:eUsuario
@@ -14,7 +14,7 @@ namespace clLogica
          dUsuario idUsuario;
          DbConnection icnn_bd;
 
-         void lUsuario(Database pdb_conexion)
+         public lUsuario(Database pdb_conexion)
          {
              idUsuario = new dUsuario();
              idUsuario.idb_conexion = pdb_conexion;             
