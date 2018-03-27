@@ -5,21 +5,14 @@ using System.Text;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using System.Data;
 using System.Data.Common;
+using clEntidad;
 namespace clDato
 {
     public class dUsuarioSede
     {
         public Database idb_conexion;
 
-        Int32 codigo;
-        public Int32 Codigo
-        {
-            get { return codigo; }
-        }
-
-        public Int32 CodSede{ get; set; }
-        public Int32 CodEmpresa { get; set; }
-        public Int32 CodUsuario { get; set; }
+     
 
         /// <summary>
         /// Insertar Sede del usuario
@@ -28,7 +21,7 @@ namespace clDato
         /// <param name="pUsuario">Codigo del usuario</param>
         /// <param name="pSede">Codigo de la sede</param>
         /// <returns>[0]: 1=OK ó -1=Error ; [1]: Mensaje</returns>
-        public String[] Insertar( DbTransaction ptrans_conexion)
+        public String[] Insertar(eUsuarioSede pUsuarioSede, DbTransaction ptrans_conexion)
         {
             String[] lValor = new String[2];
             String lExeValor, lExeMensaje;
@@ -41,9 +34,9 @@ namespace clDato
                 {
                     using (DbCommand cmd = idb_conexion.GetStoredProcCommand("DEMO.SP_USUARIO_SEDE_INSERTAR"))
                     {
-                        idb_conexion.AddInParameter(cmd, "XX_EMPRESA", DbType.Int32, CodEmpresa);
-                        idb_conexion.AddInParameter(cmd, "XX_USUARIO", DbType.Int32, CodUsuario);
-                        idb_conexion.AddInParameter(cmd, "XX_SEDE", DbType.Int32, CodSede);
+                        idb_conexion.AddInParameter(cmd, "XX_EMPRESA", DbType.Int32, pUsuarioSede.CodEmpresa);
+                        idb_conexion.AddInParameter(cmd, "XX_USUARIO", DbType.Int32, pUsuarioSede.CodUsuario);
+                        idb_conexion.AddInParameter(cmd, "XX_SEDE", DbType.Int32, pUsuarioSede.CodSede);
 
                         idb_conexion.AddOutParameter(cmd, "YY_VALOR", DbType.String, 2);
                         idb_conexion.AddOutParameter(cmd, "YY_MENSAJE", DbType.String, 4000);

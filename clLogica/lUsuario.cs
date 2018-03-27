@@ -109,7 +109,7 @@ namespace clLogica
         /// Insertar datos del usuario
         /// </summary>
         /// <returns>[0]: 1=OK ó -1=Error ; [1]: Mensaje</returns>
-        public String[] Insertar(eUsuario peUsuario )
+        public String[] Insertar(eUsuario peUsuario,List<eUsuarioSede> pListUsuSede )
         {
             DbTransaction ltrans1 = null;
             Int32 li_CodigoUsuario;
@@ -158,10 +158,8 @@ namespace clLogica
                 icnn_bd.Open();
                 ltrans1 = icnn_bd.BeginTransaction();
 
-                idUsuario.NombreUsuario = peUsuario.NombreUsuario;
-                idUsuario.NombreCompleto = peUsuario.NombreCompleto;
-                idUsuario.CodEmpresa = peUsuario.CodEmpresa;
-                lResult = idUsuario.Insertar( ltrans1);
+              
+                lResult = idUsuario.Insertar(peUsuario, ltrans1);
                 if (lResult[0] != "1")
                 {
                     vi_Commit_Rollback(ltrans1, false, icnn_bd);
@@ -171,13 +169,9 @@ namespace clLogica
                 }
                 li_CodigoUsuario = Int32.Parse(lResult[1]);
 
-                foreach (eSede RegSede in peUsuario.ItemSede)
-                {
-                    idUsuarioSede.CodSede = RegSede.Codigo;
-                    idUsuarioSede.CodUsuario =li_CodigoUsuario;
-                    idUsuarioSede.CodEmpresa = peUsuario.CodEmpresa;
-
-                    lResult = idUsuarioSede.Insertar( ltrans1);
+                foreach (eUsuarioSede RegSede in pListUsuSede)
+                {                   
+                    lResult = idUsuarioSede.Insertar(RegSede, ltrans1);
                     if (lResult[0] != "1")
                     {
                         vi_Commit_Rollback(ltrans1, false, icnn_bd);

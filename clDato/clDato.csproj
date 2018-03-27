@@ -53,6 +53,10 @@
     <Compile Include="dUsuarioSede.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\clEntidad\clEntidad.csproj">
+      <Project>{B2046EB6-5626-4DE4-B60A-FBCA69CC9907}</Project>
+      <Name>clEntidad</Name>
+    </ProjectReference>
     <ProjectReference Include="..\clUtilitario\clUtilitario.csproj">
       <Project>{7CFE4B33-3314-4B12-BF5C-E02ACCA292AB}</Project>
       <Name>clUtilitario</Name>

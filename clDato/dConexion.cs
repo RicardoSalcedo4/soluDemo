@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Data.OracleClient;
 using System.Data;
 using clUtilitario;
+
 namespace clDato
 {
     public class dConexion
