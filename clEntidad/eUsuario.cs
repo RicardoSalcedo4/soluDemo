@@ -20,8 +20,7 @@ namespace clEntidad
         public String NombreCompleto{get;set;}
         public String Clave{get;set;}
         public DateTime FechaRegistro{get;set;}
-        public Int32 EstadoActivo{get;set;}
-        public Int32 EstadoActivo3 { get; set; }
+        public Int32 EstadoActivo{get;set;}      
         
 
     }
